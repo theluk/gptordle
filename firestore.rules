@@ -10,11 +10,7 @@ service cloud.firestore {
     }
 
     match /games/{day}/plays/{userId} {
-      allow create: if request.auth.uid == userId;
-    }
-
-    match /games/{day}/plays/{userId}/{document=**} {
-      allow read, create: if request.auth.uid == userId;
+      allow create, update, read: if request.auth.uid == userId;
     }
   }
 }

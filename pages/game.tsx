@@ -1,16 +1,16 @@
+import { RobotMessage, UserMessage } from "@/components/Chat";
 import { withAuth } from "@/components/WithAuth";
 import { useTodayGameInfo } from "@/service/game";
-import { useLoggedInUser } from "@/service/user";
+import { useGameChat } from "@/service/useGameChat";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Box,
+  Button,
   CircularProgress,
   Container,
   Grid,
   Heading,
+  HStack,
+  Input,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -19,6 +19,8 @@ import Link from "next/link";
 
 function Game() {
   const [info, infoLoading, er] = useTodayGameInfo();
+
+  const { chat, input, setInput, ask } = useGameChat();
 
   return (
     <>
@@ -29,7 +31,16 @@ function Game() {
       </Head>
 
       <main>
-        <Container minHeight={"100vh"} display="flex" flexDir={"column"}>
+        <Container
+          p={{
+            base: 0,
+            sm: 4,
+          }}
+          minHeight={"100vh"}
+          maxHeight={"100vh"}
+          display="flex"
+          flexDir={"column"}
+        >
           <Stack p={4} alignContent="center">
             <Text
               as={Link}
@@ -49,7 +60,7 @@ function Game() {
           ) : null}
 
           {info ? (
-            <Grid flex="1" placeContent="center">
+            <Stack flex="1" maxH={"100vh"}>
               <Stack alignItems={"stretch"} spacing={0}>
                 <Box p={8} bg="beige">
                   <Text fontSize={"small"} fontWeight="bold">
@@ -58,15 +69,66 @@ function Game() {
                   <Heading color="orange.400">{info.title}</Heading>
                   <Text>{info.message}</Text>
                 </Box>
-                <Alert>
-                  <AlertIcon />
-                  <AlertDescription>
-                    The development is currently in progress. Please check back
-                    later.
-                  </AlertDescription>
-                </Alert>
               </Stack>
-            </Grid>
+              <Stack
+                flex={1}
+                spacing={4}
+                border={{
+                  base: "none",
+                  sm: "1px solid",
+                }}
+                borderColor={{
+                  base: "none",
+                  sm: "gray.200",
+                }}
+                p={4}
+                rounded={"md"}
+                overflowY={"auto"}
+              >
+                {chat.map((message, i) =>
+                  message.role === "user" ? (
+                    <UserMessage
+                      message={message.content}
+                      isError={!!message.errorMessage}
+                      isLoading={message.state === "loading"}
+                      key={i}
+                    />
+                  ) : (
+                    <RobotMessage
+                      message={message.content}
+                      isError={!!message.errorMessage}
+                      isLoading={message.state === "loading"}
+                      key={i}
+                    />
+                  )
+                )}
+              </Stack>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  ask();
+                }}
+              >
+                <HStack
+                  px={{
+                    base: 4,
+                    sm: 0,
+                  }}
+                  pb={process.env.NEXT_PUBLIC_EMULATE ? 124 : 0}
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDirection={"row"}
+                >
+                  <Input
+                    required
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Ask a question"
+                  />
+                  <Button type="submit">Ask</Button>
+                </HStack>
+              </form>
+            </Stack>
           ) : null}
 
           {!info && !infoLoading ? (
