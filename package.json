@@ -14,10 +14,18 @@
     "@emotion/styled": "^11.10.6",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.4",
+    "firebase": "^9.17.2",
     "framer-motion": "^10.3.2",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.8.0"
+    "react-firebase-hooks": "^5.1.1",
+    "react-icons": "^4.8.0",
+    "typescript": "^4.9.5"
+  },
+  "devDependencies": {
+    "@chakra-ui/cli": "^2.3.0",
+    "@svgr/webpack": "^6.5.1",
+    "@types/react": "^18.0.28"
   }
 }

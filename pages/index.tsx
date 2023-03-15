@@ -24,8 +24,15 @@ import Link from "next/link";
 import { FiHeart } from "react-icons/fi";
 
 import Footer from "../components/footer";
+import { useUser } from "@/service/user";
+import { auth } from "@/service/firebase";
+import { signInAnonymously } from "firebase/auth";
+import { useRouter } from "next/router";
 
-export default function CallToActionWithAnnotation() {
+export default function Home() {
+  const { loading } = useUser();
+  const router = useRouter();
+
   return (
     <>
       <Head>
@@ -79,7 +86,10 @@ export default function CallToActionWithAnnotation() {
                 _hover={{
                   bg: "green.500",
                 }}
-                isDisabled
+                isLoading={loading}
+                onClick={() => {
+                  signInAnonymously(auth).then(() => router.push("/game"));
+                }}
               >
                 Get Started
               </Button>
