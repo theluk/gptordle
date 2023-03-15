@@ -26,7 +26,7 @@ import { FaCheck, FaInfo } from "react-icons/fa";
 function Game() {
   const [info, infoLoading, er] = useTodayGameInfo();
 
-  const { chat, input, setInput, ask } = useGameChat();
+  const { chat, isComplete, input, setInput, ask } = useGameChat();
 
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +91,7 @@ function Game() {
                 </Box>
               </Stack>
 
-              {chat.length ? (
+              {!isComplete && chat.length ? (
                 <Stack
                   flex={1}
                   spacing={4}
@@ -126,7 +126,19 @@ function Game() {
                     )
                   )}
                 </Stack>
-              ) : (
+              ) : null}
+
+              {isComplete ? (
+                <Grid flex={1} placeContent="center">
+                  <Stack alignItems={"center"}>
+                    <Text fontSize={"4xl"}>🎉</Text>
+                    <Heading>Yay congratulations</Heading>
+                    <Text textColor={"gray.500"}>You guessed the word!</Text>
+                  </Stack>
+                </Grid>
+              ) : null}
+
+              {!isComplete && !chat.length ? (
                 <Grid flex={1} placeContent="center">
                   <Stack alignItems={"center"}>
                     <Text fontSize={"4xl"}>🤔</Text>
@@ -141,34 +153,36 @@ function Game() {
                     </Text>
                   </Stack>
                 </Grid>
-              )}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  ask();
-                }}
-              >
-                <HStack
-                  px={{
-                    base: 4,
-                    sm: 0,
+              ) : null}
+              {!isComplete ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    ask();
                   }}
-                  pb={{
-                    base: process.env.NEXT_PUBLIC_EMULATE ? 124 : 4,
-                  }}
-                  alignItems="center"
-                  justifyContent="center"
-                  flexDirection={"row"}
                 >
-                  <Input
-                    required
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask a question"
-                  />
-                  <Button type="submit">Ask</Button>
-                </HStack>
-              </form>
+                  <HStack
+                    px={{
+                      base: 4,
+                      sm: 0,
+                    }}
+                    pb={{
+                      base: process.env.NEXT_PUBLIC_EMULATE ? 124 : 4,
+                    }}
+                    alignItems="center"
+                    justifyContent="center"
+                    flexDirection={"row"}
+                  >
+                    <Input
+                      required
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Ask a question"
+                    />
+                    <Button type="submit">Ask</Button>
+                  </HStack>
+                </form>
+              ) : null}
             </Stack>
           ) : null}
 

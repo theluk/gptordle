@@ -21,6 +21,7 @@ export type PlayMessage = {
 };
 
 export type PlayModel = {
+  isComplete: boolean;
   chat: PlayMessage[];
 };
 
@@ -36,6 +37,7 @@ const converter = {
   ): PlayModel {
     const data = snapshot.data(options);
     return {
+      isComplete: data.isComplete || false,
       chat: data.chat,
     };
   },

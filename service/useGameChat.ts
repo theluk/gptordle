@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PlayMessage, usePlay } from "./play";
 
 type GameChat = {
+  isComplete: boolean;
   chat: PlayMessage[];
   input: string;
   setInput: (input: string) => void;
@@ -17,6 +18,7 @@ export function useGameChat(): GameChat {
   return {
     input,
     setInput,
+    isComplete: play?.data()?.isComplete || false,
     chat: play?.data()?.chat || [],
     ask: async () => {
       if (play) {
@@ -34,6 +36,7 @@ export function useGameChat(): GameChat {
         if (!play.exists()) {
           await setDoc(play.ref, {
             chat: [nextMessage],
+            isComplete: false,
           });
         } else {
           console.log("appending", nextMessage);

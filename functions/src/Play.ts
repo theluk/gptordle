@@ -96,11 +96,6 @@ export const handlePlayChange = async (
   const lastMessageIsFromUser =
     afterData.chat[afterData.chat.length - 1].role === "user";
 
-  console.log({
-    lengthChanged,
-    lastMessageIsFromUser,
-  });
-
   if (lengthChanged && lastMessageIsFromUser) {
     // append a message from the bot
     const message: PlayMessage = {
@@ -123,12 +118,16 @@ export const handlePlayChange = async (
       return chatMessage;
     });
 
+    const prompt = gamePrompt(secret, description);
+
+    console.log(prompt);
+
     const complete = withRetries({
       attempt: () =>
         ai.createChatCompletion({
           messages: [
             {
-              content: gamePrompt(secret, description),
+              content: prompt,
               role: "system",
             },
             ...conversation,
@@ -164,11 +163,24 @@ export const handlePlayChange = async (
       return;
     }
 
-    message.content = content;
+    console.log(content);
+
+    let isComplete = parseIsResponseCOMPLETE(content);
+    if (isComplete) {
+      message.content = "🎉 Congratulations! You have completed the game.";
+    } else {
+      message.content = content;
+    }
     message.state = "success";
 
     after.ref.update({
+      isComplete,
       chat: [...afterData.chat, message],
     });
   }
+};
+
+const parseIsResponseCOMPLETE = (response: string) => {
+  const match = response.match(/COMPLETE/);
+  return match ? true : false;
 };
