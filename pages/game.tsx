@@ -11,12 +11,17 @@ import {
   Heading,
   HStack,
   Input,
+  List,
+  ListIcon,
+  ListItem,
   Stack,
   Text,
+  UnorderedList,
 } from "@chakra-ui/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { FaCheck, FaInfo } from "react-icons/fa";
 
 function Game() {
   const [info, infoLoading, er] = useTodayGameInfo();
@@ -121,7 +126,22 @@ function Game() {
                     )
                   )}
                 </Stack>
-              ) : null}
+              ) : (
+                <Grid flex={1} placeContent="center">
+                  <Stack alignItems={"center"}>
+                    <Text fontSize={"4xl"}>🤔</Text>
+                    <Heading>Ask a question</Heading>
+                    <Text textColor={"gray.500"}>
+                      <UnorderedList>
+                        <ListItem>The AI is holding a secret word</ListItem>
+                        <ListItem>
+                          Ask questions to find out what it is
+                        </ListItem>
+                      </UnorderedList>
+                    </Text>
+                  </Stack>
+                </Grid>
+              )}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
