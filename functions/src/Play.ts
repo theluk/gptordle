@@ -7,6 +7,7 @@ import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { firestore } from "firebase-admin";
 import { ai } from "./ai";
 import { withRetries } from "./withRetry";
+import { gamePrompt } from "./prompt";
 
 export type PlayMessage = {
   role: ChatCompletionRequestMessage["role"];
@@ -80,6 +81,17 @@ export const handlePlayChange = async (
     return;
   }
 
+  const gameDef = await getFirestore().doc(`games/${dayStr}`).get();
+
+  if (!gameDef.exists) {
+    return;
+  }
+
+  const { secret, description } = gameDef.data() as {
+    secret: string;
+    description: string;
+  };
+
   const lengthChanged = beforeData?.chat.length !== afterData.chat.length;
   const lastMessageIsFromUser =
     afterData.chat[afterData.chat.length - 1].role === "user";
@@ -114,7 +126,13 @@ export const handlePlayChange = async (
     const complete = withRetries({
       attempt: () =>
         ai.createChatCompletion({
-          messages: conversation,
+          messages: [
+            {
+              content: gamePrompt(secret, description),
+              role: "system",
+            },
+            ...conversation,
+          ],
           model: "gpt-3.5-turbo",
           max_tokens: 50,
           temperature: 0.9,
