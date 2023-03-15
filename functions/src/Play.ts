@@ -114,7 +114,7 @@ export const handlePlayChange = async (
       chat: firestore.FieldValue.arrayUnion(message),
     });
 
-    const conversation = afterData.chat.slice(0, 2).map((message) => {
+    const conversation = afterData.chat.map((message) => {
       const chatMessage: ChatCompletionRequestMessage = {
         content: message.content,
         role: message.role,
