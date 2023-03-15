@@ -20,7 +20,7 @@ export function useGameChat(): GameChat {
     chat: play?.data()?.chat || [],
     ask: async () => {
       if (play) {
-        if (input.length < 3) {
+        if (input.length < 2) {
           return;
         }
 

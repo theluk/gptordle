@@ -16,11 +16,26 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 function Game() {
   const [info, infoLoading, er] = useTodayGameInfo();
 
   const { chat, input, setInput, ask } = useGameChat();
+
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (listRef.current) {
+        listRef.current.scrollTop = listRef.current.scrollHeight;
+      }
+    }, 0);
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chat]);
 
   return (
     <>
@@ -60,7 +75,7 @@ function Game() {
           ) : null}
 
           {info ? (
-            <Stack flex="1" maxH={"100vh"}>
+            <Stack flex="1" maxH={"100%"} overflow="hidden">
               <Stack alignItems={"stretch"} spacing={0}>
                 <Box p={8} bg="beige">
                   <Text fontSize={"small"} fontWeight="bold">
@@ -70,39 +85,43 @@ function Game() {
                   <Text>{info.message}</Text>
                 </Box>
               </Stack>
-              <Stack
-                flex={1}
-                spacing={4}
-                border={{
-                  base: "none",
-                  sm: "1px solid",
-                }}
-                borderColor={{
-                  base: "none",
-                  sm: "gray.200",
-                }}
-                p={4}
-                rounded={"md"}
-                overflowY={"auto"}
-              >
-                {chat.map((message, i) =>
-                  message.role === "user" ? (
-                    <UserMessage
-                      message={message.content}
-                      isError={!!message.errorMessage}
-                      isLoading={message.state === "loading"}
-                      key={i}
-                    />
-                  ) : (
-                    <RobotMessage
-                      message={message.content}
-                      isError={!!message.errorMessage}
-                      isLoading={message.state === "loading"}
-                      key={i}
-                    />
-                  )
-                )}
-              </Stack>
+
+              {chat.length ? (
+                <Stack
+                  flex={1}
+                  spacing={4}
+                  border={{
+                    base: "none",
+                    sm: "1px solid",
+                  }}
+                  borderColor={{
+                    base: "none",
+                    sm: "gray.200",
+                  }}
+                  p={4}
+                  rounded={"md"}
+                  overflowY={"auto"}
+                  ref={listRef}
+                >
+                  {chat.map((message, i) =>
+                    message.role === "user" ? (
+                      <UserMessage
+                        message={message.content}
+                        isError={!!message.errorMessage}
+                        isLoading={message.state === "loading"}
+                        key={i}
+                      />
+                    ) : (
+                      <RobotMessage
+                        message={message.content}
+                        isError={!!message.errorMessage}
+                        isLoading={message.state === "loading"}
+                        key={i}
+                      />
+                    )
+                  )}
+                </Stack>
+              ) : null}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -114,7 +133,9 @@ function Game() {
                     base: 4,
                     sm: 0,
                   }}
-                  pb={process.env.NEXT_PUBLIC_EMULATE ? 124 : 0}
+                  pb={{
+                    base: process.env.NEXT_PUBLIC_EMULATE ? 124 : 4,
+                  }}
                   alignItems="center"
                   justifyContent="center"
                   flexDirection={"row"}
