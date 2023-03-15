@@ -38,7 +38,7 @@ export function useGameChat(): GameChat {
         } else {
           console.log("appending", nextMessage);
           await updateDoc(play.ref, {
-            chat: [...play.data().chat.slice(0, 3), nextMessage],
+            chat: [...play.data().chat, nextMessage],
           });
         }
 
