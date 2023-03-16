@@ -7,13 +7,13 @@ import { DocumentSnapshot } from "firebase-functions/v1/firestore";
 import { firestore } from "firebase-admin";
 import { ai } from "./ai";
 import { withRetries } from "./withRetry";
-import { gamePrompt } from "./prompt";
+import { classifyGameState, gamePrompt } from "./prompt";
 import { embed } from "./embed";
 import {
   normalizedEuclideanDistance,
   normalizeDistanceHack,
 } from "./cosineSimilarity";
-import { Game } from "./onGameChange";
+import { Game, handleGameStart, handleGameSuccess } from "./onGameChange";
 
 export type PlayMessage = {
   role: ChatCompletionRequestMessage["role"];
@@ -25,6 +25,7 @@ export type PlayMessage = {
 
 export type PlayModel = {
   chat: PlayMessage[];
+  isComplete: boolean;
 };
 
 const converter = {
@@ -94,6 +95,10 @@ export const handlePlayChange = async (
     return;
   }
 
+  if (!before) {
+    handleGameStart(dayStr);
+  }
+
   const {
     secret,
     description,
@@ -103,6 +108,17 @@ export const handlePlayChange = async (
   const lengthChanged = beforeData?.chat.length !== afterData.chat.length;
   const lastMessageIsFromUser =
     afterData.chat[afterData.chat.length - 1].role === "user";
+
+  const lastMessageIsAssistantCompleted =
+    afterData.chat[afterData.chat.length - 1].role === "assistant" &&
+    afterData.chat[afterData.chat.length - 1].state === "success" &&
+    afterData.isComplete === true &&
+    beforeData?.isComplete !== afterData.isComplete;
+
+  if (lastMessageIsAssistantCompleted && docExists(gameDef)) {
+    await handleGameSuccess(dayStr, afterData.chat.length);
+    return;
+  }
 
   if (lengthChanged && lastMessageIsFromUser) {
     // append a message from the bot
@@ -148,6 +164,20 @@ export const handlePlayChange = async (
       maxRetries: 3,
     });
 
+    const classifyComplete = withRetries({
+      attempt: (chats: PlayMessage[]) => {
+        const prompt = classifyGameState(secret, chats);
+        console.log("prompt", prompt);
+        return ai.createCompletion({
+          prompt,
+          model: "text-davinci-003",
+          max_tokens: 3,
+          temperature: 0.5,
+        });
+      },
+      maxRetries: 1,
+    });
+
     const [response, embedding] = await Promise.all([
       complete(),
       embed(lastMessage.content),
@@ -185,13 +215,22 @@ export const handlePlayChange = async (
       return;
     }
 
-    console.log(content);
-
     let isComplete = parseIsResponseCOMPLETE(content);
     if (isComplete) {
       message.content = "🎉 Congratulations! You have completed the game.";
     } else {
       message.content = content;
+      const classifiedResponse = await classifyComplete([
+        ...afterData.chat,
+        message,
+      ]);
+
+      console.log(classifiedResponse.data.choices[0]?.text);
+
+      if (classifiedResponse.data.choices[0]?.text?.match(/yes/i)) {
+        console.log("classified as complete");
+        isComplete = true;
+      }
     }
     message.state = "success";
 
@@ -203,6 +242,7 @@ export const handlePlayChange = async (
 };
 
 const parseIsResponseCOMPLETE = (response: string) => {
-  const match = response.match(/COMPLETE/);
+  // ignore case
+  const match = response.match(/complete/i);
   return match ? true : false;
 };

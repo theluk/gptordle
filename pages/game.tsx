@@ -6,6 +6,7 @@ import { useGameChat } from "@/service/useGameChat";
 import {
   Box,
   Button,
+  chakra,
   CircularProgress,
   Container,
   Grid,
@@ -33,9 +34,9 @@ function Game() {
 
   const scrollToBottom = () => {
     setTimeout(() => {
-      if (listRef.current) {
-        listRef.current.scrollTop = listRef.current.scrollHeight;
-      }
+      listRef.current?.children[
+        listRef.current?.children.length - 1
+      ].scrollIntoView({ behavior: "smooth" });
     }, 0);
   };
 
@@ -55,18 +56,22 @@ function Game() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main>
+      <chakra.main>
         <Container
           p={{
             base: 0,
             sm: 4,
           }}
-          minHeight={"100vh"}
-          maxHeight={"100vh"}
           display="flex"
           flexDir={"column"}
         >
-          <Stack p={4} alignContent="center">
+          <Stack
+            p={{
+              base: 1,
+              sm: 4,
+            }}
+            alignContent="center"
+          >
             <Text
               as={Link}
               href="/"
@@ -85,9 +90,15 @@ function Game() {
           ) : null}
 
           {info ? (
-            <Stack flex="1" maxH={"100%"} overflow="hidden">
+            <>
               <Stack alignItems={"stretch"} spacing={0}>
-                <Box p={8} bg="beige">
+                <Box
+                  p={{
+                    base: 1,
+                    sm: 4,
+                  }}
+                  bg="beige"
+                >
                   <Text fontSize={"small"} fontWeight="bold">
                     {new Date().toISOString().split("T")[0]}
                   </Text>
@@ -104,14 +115,13 @@ function Game() {
                     base: "none",
                     sm: "1px solid",
                   }}
+                  ref={listRef}
                   borderColor={{
                     base: "none",
                     sm: "gray.200",
                   }}
                   p={4}
                   rounded={"md"}
-                  overflowY={"auto"}
-                  ref={listRef}
                 >
                   {chat.map((message, i) =>
                     message.role === "user" ? (
@@ -161,41 +171,7 @@ function Game() {
                   </Stack>
                 </Grid>
               ) : null}
-              {!isComplete ? (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    ask();
-                  }}
-                >
-                  {latestSimilarity?.normalizedDistance && (
-                    <SimilaritySlider
-                      similarity={latestSimilarity.normalizedDistance}
-                    />
-                  )}
-                  <HStack
-                    px={{
-                      base: 4,
-                      sm: 0,
-                    }}
-                    pb={{
-                      base: process.env.NEXT_PUBLIC_EMULATE ? 124 : 4,
-                    }}
-                    alignItems="center"
-                    justifyContent="center"
-                    flexDirection={"row"}
-                  >
-                    <Input
-                      required
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder="Ask a question"
-                    />
-                    <Button type="submit">Ask</Button>
-                  </HStack>
-                </form>
-              ) : null}
-            </Stack>
+            </>
           ) : null}
 
           {!info && !infoLoading ? (
@@ -208,7 +184,57 @@ function Game() {
             </Grid>
           ) : null}
         </Container>
-      </main>
+        {!isComplete ? (
+          <Container position={"sticky"} bottom={0}>
+            <chakra.form
+              mt={4}
+              bg={"white"}
+              borderTop={{
+                base: "1px solid",
+                sm: "none",
+              }}
+              borderColor={{
+                base: "gray.200",
+                sm: "none",
+              }}
+              pt={{
+                base: 2,
+                sm: 0,
+              }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                ask();
+              }}
+            >
+              {latestSimilarity?.normalizedDistance && (
+                <SimilaritySlider
+                  similarity={latestSimilarity.normalizedDistance}
+                />
+              )}
+              <HStack
+                px={{
+                  base: 4,
+                  sm: 0,
+                }}
+                pb={{
+                  base: process.env.NEXT_PUBLIC_EMULATE ? 124 : 4,
+                }}
+                alignItems="center"
+                justifyContent="center"
+                flexDirection={"row"}
+              >
+                <Input
+                  required
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask a question"
+                />
+                <Button type="submit">Ask</Button>
+              </HStack>
+            </chakra.form>
+          </Container>
+        ) : null}
+      </chakra.main>
     </>
   );
 }

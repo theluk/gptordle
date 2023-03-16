@@ -14,8 +14,20 @@ type Props = {
  */
 export function SimilaritySlider({ similarity }: Props) {
   return (
-    <Box display="flex" alignItems="center" justifyContent="center">
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      position={"relative"}
+      px={{
+        base: 4,
+        sm: 0,
+      }}
+      mb={1}
+    >
       <Avatar
+        position={"absolute"}
+        zIndex={1}
         size="md"
         bg={"transparent"}
         icon={
