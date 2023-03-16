@@ -58,7 +58,7 @@ function Game() {
       <Grid
         as="main"
         templateRows={"1fr auto"}
-        maxHeight="$100vh"
+        height="$100vh"
         overflow={"hidden"}
       >
         <chakra.div overflowY={"auto"}>
@@ -69,6 +69,7 @@ function Game() {
             }}
             display="flex"
             flexDir={"column"}
+            height="100%"
           >
             <Stack
               p={{
@@ -112,7 +113,7 @@ function Game() {
                   </Box>
                 </Stack>
 
-                {!isComplete && chat.length ? (
+                {!isComplete ? (
                   <Stack
                     flex={1}
                     spacing={4}
@@ -127,7 +128,16 @@ function Game() {
                     }}
                     p={4}
                     rounded={"md"}
+                    justifyContent={"flex-end"}
                   >
+                    {chat.length === 0 && (
+                      <RobotMessage
+                        message={`
+                    Hello! Welcome to the guessing game. Please ask a yes/no question to start guessing the secret word.
+                    
+                    `}
+                      />
+                    )}
                     {chat.map((message, i) =>
                       message.role === "user" ? (
                         <>
@@ -156,23 +166,6 @@ function Game() {
                       <Text fontSize={"4xl"}>🎉</Text>
                       <Heading>Yay congratulations</Heading>
                       <Text textColor={"gray.500"}>You guessed the word!</Text>
-                    </Stack>
-                  </Grid>
-                ) : null}
-
-                {!isComplete && !chat.length ? (
-                  <Grid flex={1} placeContent="center">
-                    <Stack alignItems={"center"}>
-                      <Text fontSize={"4xl"}>🤔</Text>
-                      <Heading>Ask a question</Heading>
-                      <Text textColor={"gray.500"}>
-                        <UnorderedList>
-                          <ListItem>The AI is holding a secret word</ListItem>
-                          <ListItem>
-                            Ask questions to find out what it is
-                          </ListItem>
-                        </UnorderedList>
-                      </Text>
                     </Stack>
                   </Grid>
                 ) : null}
