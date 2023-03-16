@@ -1,4 +1,5 @@
 import { RobotMessage, UserMessage } from "@/components/Chat";
+import { SimilaritySlider } from "@/components/SimilaritySlider";
 import { withAuth } from "@/components/WithAuth";
 import { useTodayGameInfo } from "@/service/game";
 import { useGameChat } from "@/service/useGameChat";
@@ -41,6 +42,10 @@ function Game() {
   useEffect(() => {
     scrollToBottom();
   }, [chat]);
+
+  const latestSimilarity = [...chat]
+    .reverse()
+    .find((c) => c.normalizedDistance);
 
   return (
     <>
@@ -110,12 +115,14 @@ function Game() {
                 >
                   {chat.map((message, i) =>
                     message.role === "user" ? (
-                      <UserMessage
-                        message={message.content}
-                        isError={!!message.errorMessage}
-                        isLoading={message.state === "loading"}
-                        key={i}
-                      />
+                      <>
+                        <UserMessage
+                          message={message.content}
+                          isError={!!message.errorMessage}
+                          isLoading={message.state === "loading"}
+                          key={i}
+                        />
+                      </>
                     ) : (
                       <RobotMessage
                         message={message.content}
@@ -161,6 +168,11 @@ function Game() {
                     ask();
                   }}
                 >
+                  {latestSimilarity?.normalizedDistance && (
+                    <SimilaritySlider
+                      similarity={latestSimilarity.normalizedDistance}
+                    />
+                  )}
                   <HStack
                     px={{
                       base: 4,

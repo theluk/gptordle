@@ -14,4 +14,6 @@ if so, you must send a system message with the exact string "COMPLETE"
 2. otherwise figure out if the user is asking a yes/no question.
 If the question is not a yes/no question, you can ask the user to rephrase the question.
 If the question is a yes/no question, you can answer with yes or no.
+
+3. The secret word must match the user's guess as near as possible.
 `;

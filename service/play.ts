@@ -18,6 +18,7 @@ export type PlayMessage = {
   state: "loading" | "success" | "error";
   content: string;
   errorMessage: string | null;
+  normalizedDistance?: number;
 };
 
 export type PlayModel = {

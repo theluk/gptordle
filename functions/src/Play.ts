@@ -8,12 +8,19 @@ import { firestore } from "firebase-admin";
 import { ai } from "./ai";
 import { withRetries } from "./withRetry";
 import { gamePrompt } from "./prompt";
+import { embed } from "./embed";
+import {
+  normalizedEuclideanDistance,
+  normalizeDistanceHack,
+} from "./cosineSimilarity";
+import { Game } from "./onGameChange";
 
 export type PlayMessage = {
   role: ChatCompletionRequestMessage["role"];
   state: "loading" | "success" | "error";
   content: ChatCompletionRequestMessage["content"];
   errorMessage: string | null;
+  normalizedDistance?: number;
 };
 
 export type PlayModel = {
@@ -87,10 +94,11 @@ export const handlePlayChange = async (
     return;
   }
 
-  const { secret, description } = gameDef.data() as {
-    secret: string;
-    description: string;
-  };
+  const {
+    secret,
+    description,
+    embedding: secretEmbedding,
+  } = gameDef.data() as Game;
 
   const lengthChanged = beforeData?.chat.length !== afterData.chat.length;
   const lastMessageIsFromUser =
@@ -120,7 +128,8 @@ export const handlePlayChange = async (
 
     const prompt = gamePrompt(secret, description);
 
-    console.log(prompt);
+    const last10 = conversation.slice(-10);
+    const lastMessage = last10[last10.length - 1];
 
     const complete = withRetries({
       attempt: () =>
@@ -130,16 +139,29 @@ export const handlePlayChange = async (
               content: prompt,
               role: "system",
             },
-            ...conversation,
+            ...last10,
           ],
           model: "gpt-3.5-turbo",
-          max_tokens: 50,
-          temperature: 0.9,
+          max_tokens: 100,
+          temperature: 0.5,
         }),
       maxRetries: 3,
     });
 
-    const response = await complete();
+    const [response, embedding] = await Promise.all([
+      complete(),
+      embed(lastMessage.content),
+    ]);
+
+    message.normalizedDistance =
+      secretEmbedding && embedding.data.data[0]?.embedding
+        ? normalizeDistanceHack(
+            normalizedEuclideanDistance(
+              secretEmbedding,
+              embedding.data.data[0].embedding
+            )
+          )
+        : 0;
 
     if (response.status !== 200) {
       message.state = "error";
