@@ -64,6 +64,7 @@ function Game() {
           }}
           display="flex"
           flexDir={"column"}
+          pb={"100px"}
         >
           <Stack
             p={{
@@ -185,7 +186,13 @@ function Game() {
           ) : null}
         </Container>
         {!isComplete ? (
-          <Container position={"sticky"} bottom={0}>
+          <Container
+            position={{
+              base: "fixed",
+              sm: "sticky",
+            }}
+            bottom={0}
+          >
             <chakra.form
               mt={4}
               bg={"white"}
@@ -217,7 +224,7 @@ function Game() {
                   sm: 0,
                 }}
                 pb={{
-                  base: process.env.NEXT_PUBLIC_EMULATE ? 124 : 4,
+                  base: 4,
                 }}
                 alignItems="center"
                 justifyContent="center"

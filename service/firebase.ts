@@ -27,7 +27,9 @@ const functions = getFunctions(app);
 if (process.env.NEXT_PUBLIC_EMULATE) {
   connectFirestoreEmulator(firestore, "localhost", 8080);
 
-  connectAuthEmulator(auth, "http://localhost:9099");
+  connectAuthEmulator(auth, "http://localhost:9099", {
+    disableWarnings: true,
+  });
 
   connectFunctionsEmulator(functions, "localhost", 5001);
 }
