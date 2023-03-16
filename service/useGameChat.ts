@@ -1,5 +1,5 @@
 import { arrayUnion, setDoc, updateDoc } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PlayMessage, usePlay } from "./play";
 
 type GameChat = {
@@ -19,7 +19,7 @@ export function useGameChat(): GameChat {
     input,
     setInput,
     isComplete: play?.data()?.isComplete || false,
-    chat: play?.data()?.chat || [],
+    chat: useMemo(() => play?.data()?.chat || [], [play]),
     ask: async () => {
       if (play) {
         if (input.length < 2) {
