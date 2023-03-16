@@ -54,7 +54,6 @@ function Game() {
       <Head>
         <title>GPTordle</title>
         <meta name="description" content="A chat based word guessing game" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <chakra.main>
         <Container
