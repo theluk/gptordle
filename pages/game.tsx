@@ -228,7 +228,15 @@ function Game() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask a question"
                 />
-                <Button type="submit">Ask</Button>
+                <Button
+                  type="submit"
+                  display={{
+                    base: "none",
+                    sm: "flex",
+                  }}
+                >
+                  Ask
+                </Button>
               </HStack>
             </chakra.form>
           </Container>
