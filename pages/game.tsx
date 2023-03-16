@@ -187,7 +187,7 @@ function Game() {
         {!isComplete ? (
           <Container
             position={{
-              base: "fixed",
+              base: "sticky",
               sm: "sticky",
             }}
             bottom={0}
