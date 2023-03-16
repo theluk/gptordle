@@ -23,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               ...theme.styles.global,
               body: {
                 minHeight: "auto !important",
+                position: "relative",
               },
             },
           },
