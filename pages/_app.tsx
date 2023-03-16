@@ -1,11 +1,24 @@
 // pages/_app.js
 import { UserProvider } from "@/service/user";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, theme } from "@chakra-ui/react";
 import { AppProps } from "next/app";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider>
+    <ChakraProvider
+      theme={{
+        ...theme,
+        styles: {
+          ...theme.styles,
+          global: {
+            ...theme.styles.global,
+            body: {
+              minHeight: "auto !important",
+            },
+          },
+        },
+      }}
+    >
       <UserProvider>
         <Component {...pageProps} />
       </UserProvider>
