@@ -14,20 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
 
-      <ChakraProvider
-        theme={{
-          ...theme,
-          styles: {
-            ...theme.styles,
-            global: {
-              ...theme.styles.global,
-              body: {
-                minHeight: "auto !important",
-              },
-            },
-          },
-        }}
-      >
+      <ChakraProvider>
         <UserProvider>
           <Component {...pageProps} />
         </UserProvider>

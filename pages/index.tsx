@@ -40,7 +40,7 @@ export default function Home() {
         <meta name="description" content="A chat based word guessing game" />
       </Head>
 
-      <Stack minHeight="100vh">
+      <Stack>
         <Container maxW={"3xl"} flex={1}>
           <Stack
             as={Box}
