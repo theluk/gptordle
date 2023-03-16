@@ -58,8 +58,7 @@ function Game() {
       <Grid
         as="main"
         templateRows={"1fr auto"}
-        minHeight="100vh"
-        maxH={"100vh"}
+        height="$100vh"
         overflow={"hidden"}
       >
         <chakra.div overflowY={"auto"}>
