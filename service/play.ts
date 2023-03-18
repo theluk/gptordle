@@ -24,6 +24,10 @@ export type PlayMessage = {
 export type PlayModel = {
   isComplete: boolean;
   chat: PlayMessage[];
+  pentagon: {
+    score: number;
+    label: string | null;
+  }[];
 };
 
 const converter = {
@@ -40,6 +44,23 @@ const converter = {
     return {
       isComplete: data.isComplete || false,
       chat: data.chat,
+      pentagon: data.pentagon || [
+        {
+          score: 0,
+        },
+        {
+          score: 0,
+        },
+        {
+          score: 0,
+        },
+        {
+          score: 0,
+        },
+        {
+          score: 0,
+        },
+      ],
     };
   },
 };

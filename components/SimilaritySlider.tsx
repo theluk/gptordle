@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 type Props = {
   /** a number between 0.0 and 1.0 */
-  similarity: number;
+  similarity?: number;
 };
 
 /**
@@ -15,41 +15,39 @@ type Props = {
 export function SimilaritySlider({ similarity }: Props) {
   return (
     <Box
+      flex={1}
       display="flex"
       alignItems="center"
       justifyContent="center"
       position={"relative"}
-      px={{
-        base: 4,
-        sm: 0,
-      }}
-      mb={1}
     >
-      <Avatar
-        position={"absolute"}
-        zIndex={1}
-        size="md"
-        bg={"transparent"}
-        icon={
-          similarity < 0.4 ? (
-            <Box as="span" role="img" aria-label="cold">
-              🥶
-            </Box>
-          ) : similarity < 0.6 ? (
-            <Box as="span" role="img" aria-label="thinking">
-              🤔
-            </Box>
-          ) : similarity < 0.8 ? (
-            <Box as="span" role="img" aria-label="smile">
-              😃
-            </Box>
-          ) : (
-            <Box as="span" role="img" aria-label="party">
-              🥳
-            </Box>
-          )
-        }
-      />
+      {similarity !== undefined && (
+        <Avatar
+          position={"absolute"}
+          zIndex={1}
+          size="md"
+          bg={"transparent"}
+          icon={
+            similarity < 0.4 ? (
+              <Box as="span" role="img" aria-label="cold">
+                🥶
+              </Box>
+            ) : similarity < 0.6 ? (
+              <Box as="span" role="img" aria-label="thinking">
+                🤔
+              </Box>
+            ) : similarity < 0.8 ? (
+              <Box as="span" role="img" aria-label="smile">
+                😃
+              </Box>
+            ) : (
+              <Box as="span" role="img" aria-label="party">
+                🥳
+              </Box>
+            )
+          }
+        />
+      )}
       <Box
         display="flex"
         alignItems="center"
@@ -63,13 +61,13 @@ export function SimilaritySlider({ similarity }: Props) {
         <Box
           as={motion.div}
           animate={{
-            width: `${similarity * 100}%`,
+            width: `${(similarity || 0) * 100}%`,
           }}
           h={3}
           bg={
-            similarity < 0.4
+            (similarity || 0) < 0.4
               ? "red.400"
-              : similarity < 0.6
+              : (similarity || 0) < 0.6
               ? "yellow.400"
               : "green.400"
           }

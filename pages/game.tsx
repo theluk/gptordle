@@ -1,4 +1,5 @@
 import { RobotMessage, UserMessage } from "@/components/Chat";
+import { MilestoneBox, MilestoneRow } from "@/components/MilestoneBox";
 import { SimilaritySlider } from "@/components/SimilaritySlider";
 import { withAuth } from "@/components/WithAuth";
 import { useTodayGameInfo } from "@/service/game";
@@ -29,7 +30,7 @@ import { FaCheck, FaInfo } from "react-icons/fa";
 function Game() {
   const [info, infoLoading, er] = useTodayGameInfo();
 
-  const { chat, isComplete, input, setInput, ask } = useGameChat();
+  const { chat, pentagon, isComplete, input, setInput, ask } = useGameChat();
 
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +53,7 @@ function Game() {
   return (
     <>
       <Head>
-        <title>GPTordle</title>
+        <title>WordGameAI.com</title>
         <meta name="description" content="A chat based word guessing game" />
       </Head>
       <Grid
@@ -86,7 +87,7 @@ function Game() {
                 fontWeight={"black"}
                 fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
               >
-                GPTordle
+                WordGameAI.com
               </Text>
             </Stack>
             {infoLoading ? (
@@ -205,16 +206,13 @@ function Game() {
                 ask();
               }}
             >
-              {latestSimilarity?.normalizedDistance && (
+              <HStack alignItems={"stretch"} my={2}>
+                <MilestoneRow values={pentagon} />
                 <SimilaritySlider
-                  similarity={latestSimilarity.normalizedDistance}
+                  similarity={latestSimilarity?.normalizedDistance}
                 />
-              )}
+              </HStack>
               <HStack
-                px={{
-                  base: 4,
-                  sm: 0,
-                }}
                 pb={{
                   base: 4,
                 }}

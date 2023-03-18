@@ -28,15 +28,24 @@ import { useUser } from "@/service/user";
 import { auth } from "@/service/firebase";
 import { signInAnonymously } from "firebase/auth";
 import { useRouter } from "next/router";
+import PentagonChart from "@/components/PentagonChart";
 
 export default function Home() {
   const { loading } = useUser();
   const router = useRouter();
 
+  const data = [
+    { field: "Field1", value: 0.5 },
+    { field: "", value: 0.8 },
+    { field: "Field3", value: 0.1 },
+    { field: "Field4", value: 0.9 },
+    { field: "Field5", value: 0.5 },
+  ];
+
   return (
     <>
       <Head>
-        <title>GPTordle</title>
+        <title>WordGameAI.com</title>
         <meta name="description" content="A chat based word guessing game" />
       </Head>
 
@@ -54,7 +63,7 @@ export default function Home() {
                 fontWeight={"black"}
                 fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
               >
-                GPTordle
+                WordGameAI.com
               </Text>
             </Box>
             <Heading

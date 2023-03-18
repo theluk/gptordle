@@ -13,7 +13,12 @@ import {
   normalizedEuclideanDistance,
   normalizeDistanceHack,
 } from "./cosineSimilarity";
-import { Game, handleGameStart, handleGameSuccess } from "./onGameChange";
+import {
+  Game,
+  gameConverter,
+  handleGameStart,
+  handleGameSuccess,
+} from "./onGameChange";
 
 export type PlayMessage = {
   role: ChatCompletionRequestMessage["role"];
@@ -25,6 +30,10 @@ export type PlayMessage = {
 
 export type PlayModel = {
   chat: PlayMessage[];
+  pentagon: {
+    score: number;
+    label: string | null;
+  }[];
   isComplete: boolean;
 };
 
@@ -37,7 +46,11 @@ const converter = {
       throw new Error("Play not found");
     }
     const data = snapshot.data();
-    return data as PlayModel;
+    return {
+      chat: data.chat,
+      pentagon: data.pentagon || [],
+      isComplete: data.isComplete || false,
+    } as PlayModel;
   },
 };
 
@@ -89,9 +102,12 @@ export const handlePlayChange = async (
     return;
   }
 
-  const gameDef = await getFirestore().doc(`games/${dayStr}`).get();
+  const gameDef = await getFirestore()
+    .doc(`games/${dayStr}`)
+    .withConverter(gameConverter)
+    .get();
 
-  if (!gameDef.exists) {
+  if (!docExists(gameDef)) {
     return;
   }
 
@@ -103,7 +119,7 @@ export const handlePlayChange = async (
     secret,
     description,
     embedding: secretEmbedding,
-  } = gameDef.data() as Game;
+  } = gameDef.data() || {};
 
   const lengthChanged = beforeData?.chat.length !== afterData.chat.length;
   const lastMessageIsFromUser =
@@ -233,10 +249,14 @@ export const handlePlayChange = async (
       }
     }
     message.state = "success";
-
     after.ref.update({
       isComplete,
       chat: [...afterData.chat, message],
+      pentagon: getNextPentagonValues(
+        afterData,
+        gameDef.data(),
+        embedding.data.data[0]?.embedding || []
+      ),
     });
   }
 };
@@ -246,3 +266,30 @@ const parseIsResponseCOMPLETE = (response: string) => {
   const match = response.match(/complete/i);
   return match ? true : false;
 };
+
+export function getNextPentagonValues(
+  play: PlayModel,
+  game: Game,
+  currentUserEmbedding: number[]
+) {
+  const pentagon = [...play.pentagon] || [];
+  for (let i = 0; i < 5; i++) {
+    const gameEmbedding = game.pentagon[i].embedding;
+    const gameLabel = game.pentagon[i].label;
+
+    const distance = normalizeDistanceHack(
+      normalizedEuclideanDistance(gameEmbedding, currentUserEmbedding)
+    );
+    const current = pentagon[i];
+    const newMax = Math.max(current.score || 0, distance);
+    const newScore = newMax > 0.85 ? newMax : distance;
+    const isSolved = newScore > 0.92;
+
+    pentagon[i] = {
+      label: isSolved ? gameLabel : null,
+      score: newScore,
+    };
+  }
+
+  return pentagon;
+}
