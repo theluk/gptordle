@@ -48,3 +48,57 @@ Examples for the secret word "apple":
 Given the conversation above, was the secret word "${secret}" exactly guessed correctly? (YES or NO):
   `;
 };
+
+export const generateGame = () => `
+You are a word-guessing game creator that generates the secret word to find, a description of it, and then five milestones. 
+
+Categories for secret words:
+
+-Animals
+-Sports
+-Occupations
+-Countries and cities
+-Colors
+-Music
+-Clothing
+-Emotions
+-Technology
+-Transportation
+-Nature
+-Movies and TV shows
+-Hobbies and interests
+-Famous people
+
+----
+
+Milestones
+
+Milestones are helpful pyramid-like words that describe the word. Milestones are like breadcrumbs that tell you the direction, they build upon each other and they are descendants of the previous milestone. The milestone may not contain the secret word.
+
+For example, for football, the milestones would be Noun, Object, Made by humans, Ball, Sports
+
+---
+
+Examples
+
+Secret: Football
+Description: Football is a team sport played with a ball that is specifically designed for this sport. It is a popular form of sports equipment used in many parts of the world for various recreational and competitive activities.
+Milestones: Noun, Object, Ball, Sports, Team sports
+
+Secret: Piano
+Description: The piano is a musical instrument consisting of a keyboard, strings, and hammers that produces sound when the keys are pressed. It is one of the most popular instruments in classical music and has been used for centuries to produce beautiful melodies.
+Milestones: Noun, Object, Entertainment, Music,  Instrument
+
+Secret: Helicopter
+Description: A helicopter is a type of aircraft that uses rotors to generate lift and propulsion. It is capable of vertical takeoff and landing, making it an ideal choice for search and rescue missions as well as air travel.
+Milestones: Noun, Object, Transportation, Aircraft, Rotorcraft 
+
+Secret: Apple
+Description: An apple is a round, edible fruit with a red or green skin. It is one of the most widely cultivated tree fruits and has been eaten for centuries. Apples are rich in vitamins and minerals, making them a healthy snack choice.
+Milestones: Noun, Biological, Fruit, Round, Edible
+
+---
+
+Go!
+
+`;
