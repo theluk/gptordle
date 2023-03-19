@@ -59,7 +59,11 @@ const Message = ({
               </Alert>
             ) : isLoading ? (
               <HStack spacing={2} alignItems="center">
-                <CircularProgress isIndeterminate color="green.400" />
+                <CircularProgress
+                  isIndeterminate
+                  color="green.400"
+                  size={"16px"}
+                />
                 <Text>Thinking...</Text>
               </HStack>
             ) : null}

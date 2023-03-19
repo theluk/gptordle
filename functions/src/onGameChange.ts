@@ -12,6 +12,10 @@ export type Game = {
   secret: string;
   description: string;
   embedding?: number[];
+  pentagon: {
+    label: string;
+    embedding: number[];
+  }[];
 };
 
 export type GameInfoModel = {
@@ -26,7 +30,7 @@ export type GameInfoModel = {
   };
 };
 
-const gameInfoConverter = {
+export const gameInfoConverter = {
   toFirestore(game: GameInfoModel): DocumentData {
     return {
       title: game.title,
@@ -57,12 +61,13 @@ const gameInfoConverter = {
   },
 };
 
-const gameConverter = {
+export const gameConverter = {
   toFirestore(game: Game): DocumentData {
     return {
       secret: game.secret,
       description: game.description,
       embedding: game.embedding,
+      pentagon: game.pentagon || [],
     };
   },
   fromFirestore(snapshot: QueryDocumentSnapshot): Game {
@@ -71,6 +76,7 @@ const gameConverter = {
       secret: data.secret,
       description: data.description,
       embedding: data.embedding,
+      pentagon: data.pentagon || [],
     };
   },
 };
@@ -158,5 +164,33 @@ export const onGameChange = runWith({
           });
         }
       );
+    }
+
+    const beforePentagonLabels = beforeData?.pentagon.map((p) => p.label) || [];
+    const afterPentagonLabels = afterData?.pentagon.map((p) => p.label) || [];
+
+    const pentagonLabelsChanged =
+      beforePentagonLabels.length !== afterPentagonLabels.length ||
+      beforePentagonLabels.some((label, i) => label !== afterPentagonLabels[i]);
+
+    if (pentagonLabelsChanged) {
+      console.log(afterPentagonLabels);
+
+      const pentagonEmbeddings = await embed(afterPentagonLabels).catch((e) => {
+        console.error(e.message);
+        throw e.message;
+      });
+      const embeddings = pentagonEmbeddings.data.data
+        .sort((a, b) => a.index - b.index)
+        .map((a) => a.embedding);
+
+      if (embeddings.length === afterPentagonLabels.length) {
+        after.ref.update({
+          pentagon: afterPentagonLabels.map((label, i) => ({
+            label,
+            embedding: embeddings[i],
+          })),
+        });
+      }
     }
   });

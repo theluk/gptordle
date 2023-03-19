@@ -34,3 +34,4 @@ functions/.secret.local
 ui-debug.log
 firestore-debug.log
 firebase-debug.log
+firebase-data

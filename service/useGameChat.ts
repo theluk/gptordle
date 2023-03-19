@@ -5,6 +5,10 @@ import { PlayMessage, usePlay } from "./play";
 type GameChat = {
   isComplete: boolean;
   chat: PlayMessage[];
+  pentagon: {
+    score: number;
+    label: string | null;
+  }[];
   input: string;
   setInput: (input: string) => void;
   ask: () => void;
@@ -18,6 +22,28 @@ export function useGameChat(): GameChat {
   return {
     input,
     setInput,
+    pentagon: play?.data()?.pentagon || [
+      {
+        score: 0,
+        label: null,
+      },
+      {
+        score: 0,
+        label: null,
+      },
+      {
+        score: 0,
+        label: null,
+      },
+      {
+        score: 0,
+        label: null,
+      },
+      {
+        score: 0,
+        label: null,
+      },
+    ],
     isComplete: play?.data()?.isComplete || false,
     chat: useMemo(() => play?.data()?.chat || [], [play]),
     ask: async () => {
@@ -37,9 +63,9 @@ export function useGameChat(): GameChat {
           await setDoc(play.ref, {
             chat: [nextMessage],
             isComplete: false,
+            pentagon: [],
           });
         } else {
-          console.log("appending", nextMessage);
           await updateDoc(play.ref, {
             chat: [...play.data().chat, nextMessage],
           });

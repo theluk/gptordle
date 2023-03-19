@@ -1,4 +1,5 @@
 import { RobotMessage, UserMessage } from "@/components/Chat";
+import { MilestoneBox, MilestoneRow } from "@/components/MilestoneBox";
 import { SimilaritySlider } from "@/components/SimilaritySlider";
 import { withAuth } from "@/components/WithAuth";
 import { useTodayGameInfo } from "@/service/game";
@@ -14,7 +15,7 @@ import {
   Heading,
   HStack,
   Input,
-  List,
+  OrderedList,
   ListIcon,
   ListItem,
   Stack,
@@ -29,7 +30,7 @@ import { FaCheck, FaInfo } from "react-icons/fa";
 function Game() {
   const [info, infoLoading, er] = useTodayGameInfo();
 
-  const { chat, isComplete, input, setInput, ask } = useGameChat();
+  const { chat, pentagon, isComplete, input, setInput, ask } = useGameChat();
 
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +53,7 @@ function Game() {
   return (
     <>
       <Head>
-        <title>GPTordle</title>
+        <title>WordGameAI.com</title>
         <meta name="description" content="A chat based word guessing game" />
       </Head>
       <Grid
@@ -86,7 +87,7 @@ function Game() {
                 fontWeight={"black"}
                 fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
               >
-                GPTordle
+                WordGameAI.com
               </Text>
             </Stack>
             {infoLoading ? (
@@ -100,7 +101,7 @@ function Game() {
                 <Stack alignItems={"stretch"} spacing={0}>
                   <Box
                     p={{
-                      base: 1,
+                      base: 4,
                       sm: 4,
                     }}
                     bg="beige"
@@ -108,8 +109,38 @@ function Game() {
                     <Text fontSize={"small"} fontWeight="bold">
                       {new Date().toISOString().split("T")[0]}
                     </Text>
-                    <Heading color="orange.400">{info.title}</Heading>
-                    <Text>{info.message}</Text>
+                    <Heading color="orange.400" mb={2}>
+                      Welcome &amp; Have Fun!
+                    </Heading>
+                    <Text as="b">Before we begin, here are some notes</Text>
+                    <OrderedList spacing={2} mt={4}>
+                      <ListItem>
+                        The <b>AI opponent</b> thinks of a secret word.
+                      </ListItem>
+                      <ListItem>
+                        <b>Users</b> guess the secret word by asking yes or no
+                        questions.
+                      </ListItem>
+                      <ListItem>
+                        Logical or mathematical questions{" "}
+                        <em>may be misinterpreted</em> by the AI, so it&apos;s
+                        best to <b>ask straightforward questions</b>.
+                      </ListItem>
+                      <ListItem>
+                        The game is intended to be a <b>fun</b> and engaging
+                        experience, rather than a rigorous test of knowledge or
+                        logic.
+                      </ListItem>
+                      <ListItem>
+                        Users should be aware that the AI&apos;s answers may
+                        sometimes be <b>misleading or ambiguous</b>.
+                      </ListItem>
+                      <ListItem>
+                        The AI&apos;s knowledge is <b>limited</b> to information
+                        up to September 2021, which may affect the choice of
+                        secret words and the answers provided.
+                      </ListItem>
+                    </OrderedList>
                   </Box>
                 </Stack>
 
@@ -205,16 +236,13 @@ function Game() {
                 ask();
               }}
             >
-              {latestSimilarity?.normalizedDistance && (
+              <HStack alignItems={"stretch"} my={2}>
+                <MilestoneRow values={pentagon} />
                 <SimilaritySlider
-                  similarity={latestSimilarity.normalizedDistance}
+                  similarity={latestSimilarity?.normalizedDistance}
                 />
-              )}
+              </HStack>
               <HStack
-                px={{
-                  base: 4,
-                  sm: 0,
-                }}
                 pb={{
                   base: 4,
                 }}

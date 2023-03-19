@@ -18,32 +18,52 @@ import {
   PopoverHeader,
   PopoverBody,
   HStack,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import Link from "next/link";
 
-import { FiHeart } from "react-icons/fi";
+import {
+  FiHeart,
+  FiCpu,
+  FiHelpCircle,
+  FiCalendar,
+  FiSmile,
+  FiTrendingUp,
+  FiAward,
+} from "react-icons/fi";
 
 import Footer from "../components/footer";
 import { useUser } from "@/service/user";
 import { auth } from "@/service/firebase";
 import { signInAnonymously } from "firebase/auth";
 import { useRouter } from "next/router";
+import PentagonChart from "@/components/PentagonChart";
+import { Feature } from "@/components/Feature";
 
 export default function Home() {
   const { loading } = useUser();
   const router = useRouter();
 
+  const data = [
+    { field: "Field1", value: 0.5 },
+    { field: "", value: 0.8 },
+    { field: "Field3", value: 0.1 },
+    { field: "Field4", value: 0.9 },
+    { field: "Field5", value: 0.5 },
+  ];
+
   return (
     <>
       <Head>
-        <title>GPTordle</title>
+        <title>WordGameAI.com</title>
         <meta name="description" content="A chat based word guessing game" />
       </Head>
 
-      <Stack>
+      <Stack h="$100vh">
         <Container maxW={"3xl"} flex={1}>
           <Stack
             as={Box}
+            flex="1"
             textAlign={"center"}
             spacing={{ base: 8, md: 14 }}
             py={{ base: 20, md: 36 }}
@@ -54,7 +74,7 @@ export default function Home() {
                 fontWeight={"black"}
                 fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
               >
-                GPTordle
+                WordGameAI.com
               </Text>
             </Box>
             <Heading
@@ -90,7 +110,7 @@ export default function Home() {
                   signInAnonymously(auth).then(() => router.push("/game"));
                 }}
               >
-                Get Started
+                Let&apos;s Play!
               </Button>
               <Popover>
                 <PopoverTrigger>
@@ -146,22 +166,58 @@ export default function Home() {
                   fontSize={"lg"}
                   fontFamily={"Caveat"}
                   position={"absolute"}
-                  right={"-100px"}
+                  right={"-70px"}
                   top={"-15px"}
                   transform={"rotate(10deg)"}
                 >
-                  Building live{" "}
-                  <Button
-                    as={Link}
-                    href="https://twitter.com/theluk246"
-                    variant={"link"}
-                    colorScheme="blue"
-                  >
-                    #now
-                  </Button>
+                  Free
                 </Text>
               </Box>
             </Stack>
+            <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={10}>
+              <Feature
+                icon={<Icon as={FiCpu} w={10} h={10} />}
+                title={"AI-Powered Opponent"}
+                text={
+                  "Experience a unique and engaging game with an AI-driven opponent, designed to challenge your wit and guessing abilities."
+                }
+              />
+              <Feature
+                icon={<Icon as={FiHelpCircle} w={10} h={10} />}
+                title={"Yes or No Questions"}
+                text={
+                  "Use strategic yes or no questions to unravel the mystery of the daily secret word, testing your deductive reasoning and problem-solving skills."
+                }
+              />
+              <Feature
+                icon={<Icon as={FiCalendar} w={10} h={10} />}
+                title={"Daily Secret Word"}
+                text={
+                  "All players receive the same secret word each day, providing a shared challenge and fostering a sense of community."
+                }
+              />
+              <Feature
+                icon={<Icon as={FiSmile} w={10} h={10} />}
+                title={"Fun and Casual Gameplay"}
+                text={
+                  "Enjoy a light-hearted, entertaining game that&apos;s perfect for quick breaks, group activities, or friendly competition."
+                }
+              />
+              <Feature
+                icon={<Icon as={FiTrendingUp} w={10} h={10} />}
+                title={"Color-Coded Progress Indicators"}
+                text={
+                  "Receive real-time feedback through colored indicators, letting you know how close or far you are from guessing the secret word for added gamification."
+                }
+              />
+              <Feature
+                icon={<Icon as={FiAward} w={10} h={10} />}
+                title={"Upcoming Leaderboard"}
+                text={
+                  "Get ready for a leaderboard feature, which will showcase top performers and foster a competitive environment among players."
+                }
+              />
+            </SimpleGrid>
           </Stack>
         </Container>
         <Footer />
