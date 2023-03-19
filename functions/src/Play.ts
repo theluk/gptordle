@@ -281,7 +281,7 @@ export function getNextPentagonValues(
       normalizedEuclideanDistance(gameEmbedding, currentUserEmbedding)
     );
     const current = pentagon[i];
-    const newMax = Math.max(current.score || 0, distance);
+    const newMax = Math.max(current?.score || 0, distance);
     const newScore = newMax > 0.85 ? newMax : distance;
     const isSolved = newScore > 0.92;
 
