@@ -66,8 +66,8 @@ export const gameConverter = {
     return {
       secret: game.secret,
       description: game.description,
-      embedding: game.embedding,
-      pentagon: game.pentagon || [],
+      embedding: game.embedding ?? null,
+      pentagon: game.pentagon ?? null,
     };
   },
   fromFirestore(snapshot: QueryDocumentSnapshot): Game {
@@ -75,7 +75,7 @@ export const gameConverter = {
     return {
       secret: data.secret,
       description: data.description,
-      embedding: data.embedding,
+      embedding: data.embedding || [],
       pentagon: data.pentagon || [],
     };
   },
