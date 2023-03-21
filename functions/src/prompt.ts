@@ -49,7 +49,7 @@ Given the conversation above, was the secret word "${secret}" exactly guessed co
   `;
 };
 
-export const generateGame = () => `
+export const generateGame = (exclude: string[]) => `
 You are a word-guessing game creator that generates the secret word to find, a description of it, and then five milestones. 
 
 Categories for secret words:
@@ -98,6 +98,10 @@ Description: An apple is a round, edible fruit with a red or green skin. It is o
 Milestones: Noun, Biological, Fruit, Round, Edible
 
 ---
+
+You are not allowed to pick the following words: ${exclude
+  .slice(-10)
+  .join(", ")}
 
 Go!
 

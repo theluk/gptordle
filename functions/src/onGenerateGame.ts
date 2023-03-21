@@ -17,14 +17,22 @@ export const onGenerateName = runWith({
     await generate();
   });
 
-export const triggerNewGameGeneration = runWith({
-  secrets: ["OPENAI_KEY"],
-  timeoutSeconds: 540,
-}).https.onCall(async () => {
-  await generate();
-});
+// export const triggerNewGameGeneration = runWith({
+//   secrets: ["OPENAI_KEY"],
+//   timeoutSeconds: 540,
+// }).https.onCall(async () => {
+//   await generate();
+// });
 
 const generate = async () => {
+  const allGames = await getFirestore()
+    .collection("games")
+    .withConverter(gameConverter)
+    .select("secret")
+    .get();
+
+  const allSecrets = allGames.docs.map((doc) => doc.data().secret);
+
   const todayStr = new Date().toISOString().split("T")[0];
   // check if game already exists
   const game = await getFirestore()
@@ -37,7 +45,7 @@ const generate = async () => {
     return;
   }
 
-  const result = await completeWithRetry();
+  const result = await completeWithRetry(allSecrets);
 
   console.log("result", result);
 
@@ -96,14 +104,14 @@ function parse(input: string) {
 }
 
 const completeWithRetry = withRetries({
-  attempt: async () => {
+  attempt: async (exclude: string[]) => {
     const result = await ai.createCompletion({
-      prompt: generateGame(),
+      prompt: generateGame(exclude),
       model: "text-davinci-003",
       max_tokens: 256,
       frequency_penalty: 0.5,
       presence_penalty: 0.5,
-      temperature: 0.5,
+      temperature: 0.9,
     });
 
     const text = result.data.choices[0].text?.trim() as string;
